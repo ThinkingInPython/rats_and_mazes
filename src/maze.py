@@ -55,7 +55,7 @@ class Maze(object):
         # make first Rat and add it..
         first_rat = rat.Rat(self.maze, 0, 0)
         print ("Started rat..")
-        first_rat.start()
+        first_rat.start_me()
         print ("Finished rat..")
         self.canvas.mainloop()
         print("done main loop")

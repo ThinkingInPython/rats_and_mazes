@@ -1,7 +1,7 @@
 import threading
 import time
 
-class Rat(threading.Thread):
+class Rat(object):
     lock = threading.Lock()
     rat_counter = 0
     def __init__(self, maze, x, y):
@@ -31,28 +31,27 @@ class Rat(threading.Thread):
                       self.y + p[1] in range(0,self.height) and
                       self.maze[self.x+ p[0]][self.y+ p[1]] == '0'):
                         available_directions +=1      # we can go in at least one direction.
-                        if available_directions == 1: # this rat will take the first direction
+                        if available_directions == 1: # this rat continues here
                             self.maze[self.x + p[0]][self.y + p[1]] = 'r'
                             my_x = self.x + p[0]
                             my_y = self.y + p[1]
                         if available_directions > 1:
                             # there is more than one direction. Make a new Rat.
                             rat = Rat(self.maze, self.x+ p[0], self.y+ p[1])
-                            rat.start()
+                            rat.start_me()
                 self.x = my_x
                 self.y = my_y
                 if available_directions == 0:
-                    #nowhere to go, we have to kill the rat.
+                    #nowhere to go, the rat dies.
                     rat_alive = False
+                    print(f"Rat dying, current rat count = {threading.active_count()-2}")
 
 
-    def startMe(self):
-        t1 = threading.Thread(target=self.run())
+    def start_me(self):
+        t1 = threading.Thread(target=self.run)
         t1.start()
 
 mz = [['0','x','x','0'],['0','0','0','0'],['0','0','0','x'],['0','0','0','0']]
 rt = Rat(mz,0,0)
-#print("Starting.")
-#t1 = threading.Thread(target=rt.run())
-rt.start()
+rt.start_me()
 print("done.")
