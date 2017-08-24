@@ -1,9 +1,11 @@
 import tkinter
+import threading
 
-from src import rat
+import rat
 
 
 class Maze(object):
+    color_map = rat.Rat.color_map
     def __init__(self):
         self.maze = []
         self.scale = 25
@@ -18,12 +20,11 @@ class Maze(object):
         for ln in my_file:
             #convert line into a list, minus the newline.
             self.maze.append(list(filter(lambda c: c!= "\n", ln)))
-            print("line no.{} : {}".format(i, ln))
             i=i+1
 
         self.height = self.maze.__len__()
         self.width = self.maze[0].__len__()
-        print ("width is {} and height is {}".format(self.width,self.height))
+        print (f" Maze with dimensions [{self.width} X {self.height}] loaded")
         self.canvas = tkinter.Canvas(self.root, bg="white", height = self.maze.__len__()*self.scale, width=self.maze[0].__len__()*self.scale)
         #self.drawMaze()
         self.dump()
@@ -31,23 +32,24 @@ class Maze(object):
 
 
     def dump(self):
-        for l in self.maze :
+        for l in self.maze:
             print(l)
 
     def drawMaze(self):
         s= self.scale
         for y in range(0,self.height):
             for x in range(0,self.width):
-                if self.maze[x][y] == "x" :
-                    self.canvas.create_rectangle(y*s, x*s, (y+1)*s, (x+1)*s, fill="blue")
-                if self.maze[x][y] == "r" :
-                    self.canvas.create_rectangle(y*s, x*s, (y+1)*s, (x+1)*s, fill="red")
+                if self.maze[x][y] != "0":
+                    self.canvas.create_rectangle(y*s, x*s, (y+1)*s, (x+1)*s, fill=Maze.color_map[self.maze[x][y]])
 
 
-    def modelToView(self):
+
+    def refresh(self):
         #self.maze[random.randint(0,9)][random.randint(0,9)] = "x"
-        self.canvas.after(1000, self.modelToView)
         self.drawMaze()
+        self.canvas.after(500, self.refresh)
+
+
 
 
 
@@ -62,6 +64,6 @@ class Maze(object):
 
 m = Maze()
 m.loadMaze("a_maze.txt")
-m.modelToView()
+m.refresh()
 m.start()
 
